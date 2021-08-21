@@ -1,3 +1,4 @@
+
 # Revit_element_on_ground
 Скрипт CreateOnGround_v5.dyn позволяет рисовать кабельные сети(кабель, траншеи, трубы, соединительные муфты) в Revit.
 Для создания использовались стандартные ноды Dynamo, а также ноды на языке Python.
@@ -18,4 +19,4 @@
 
 Put element on Revit and place them on the ground
 ![Рисунок 1](https://user-images.githubusercontent.com/88984484/130327701-b955a6b1-528c-4952-aa00-6faec8c737c7.png)
-![Рисунок 3](https://user-images.githubusercontent.com/88984484/130327705-d6f1bf1b-b503-4219-b0f1-364a4a2c9a05.png)
+![Рисунок 3](https://user-images.githubusercontent.com/88984484/130329056-63074a1d-0228-4892-ad8f-1d2dc4aa9b04.png)
