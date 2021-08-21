@@ -1,0 +1,1068 @@
+{
+  "Uuid": "e79e7e91-a0cc-4970-823f-6a37db655252",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "CreateOnGround_v5",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Topography": {
+        "Key": "Revit.Elements.Topography",
+        "Value": "RevitNodes.dll"
+      },
+      "Mesh": {
+        "Key": "Autodesk.DesignScript.Geometry.Mesh",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Geometry": {
+        "Key": "Autodesk.DesignScript.Geometry.Geometry",
+        "Value": "ProtoGeometry.dll"
+      },
+      "IndexGroup": {
+        "Key": "Autodesk.DesignScript.Geometry.IndexGroup",
+        "Value": "ProtoGeometry.dll"
+      },
+      "List": {
+        "Key": "List",
+        "Value": "BuiltIn.ds"
+      },
+      "Surface": {
+        "Key": "Autodesk.DesignScript.Geometry.Surface",
+        "Value": "ProtoGeometry.dll"
+      },
+      "PolySurface": {
+        "Key": "Autodesk.DesignScript.Geometry.PolySurface",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Line": {
+        "Key": "Autodesk.DesignScript.Geometry.Line",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Curve": {
+        "Key": "Autodesk.DesignScript.Geometry.Curve",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Point": {
+        "Key": "Autodesk.DesignScript.Geometry.Point",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Math": {
+        "Key": "DSCore.Math",
+        "Value": "DSCoreNodes.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nimport sys\r\nimport System\r\nfrom System import Array\r\nfrom System.Collections.Generic import *\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\nDynPoint = Point\r\nDynLine = Line\r\nDynCurve = Curve\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nclr.AddReference(\"RevitAPIUI\")\r\n\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.UI import *\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application \r\nuidoc = uiapp.ActiveUIDocument\r\n\r\nfrom Autodesk.Revit.UI.Selection import *\r\n\r\ndef tolist(obj1):\r\n\tif hasattr(obj1,\"__iter__\"): \r\n\t\treturn obj1\r\n\telse: \r\n\t\treturn [obj1]\r\n\t\t\r\nclass MySelectionFilter(Autodesk.Revit.UI.Selection.ISelectionFilter):\r\n\tdef __init__(self):\r\n\t\tpass\r\n\tdef AllowElement(self, element):\r\n\t\tif (element.Category.Name == \"Линии\"):\r\n\t\t\treturn True\r\n\t\telse:\r\n\t\t\treturn False\r\n\tdef AllowReference(self, element):\r\n\t\treturn False\r\n\t\t\r\nnProgramm = IN[0]\r\n\r\n#selection_filter = MySelectionFilter()\r\n\r\n#selection = uidoc.Selection;\r\nLinesIds = uidoc.Selection.GetElementIds()\r\nLines=[]\r\n\r\nfor id in LinesIds:\r\n\telement=doc.GetElement(id)\r\n\tif element.Category.Name == \"Линии\":\r\n\t\tLines.append(element)\r\n\t\t\r\n\r\nif nProgramm == 1:\r\n\tOUT = Lines\r\nelse:\r\n\tOUT = []\r\n\r\n\r\n",
+      "VariableInputPorts": true,
+      "Id": "2b3bb31156924165a9f2367e0105e113",
+      "Inputs": [
+        {
+          "Id": "b378176341a94531860cc10a16fe1d9a",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "8f3c0484d0c84524a97be17b13ccf141",
+          "Name": "OUT",
+          "Description": "Результат сценария Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение встроенного сценария IronPython."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Загрузить стандартную библиотеку Python и библиотеку DesignScript\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\nDynPoint = Point\r\nDynLine = Line\r\nDynSurface = Surface\r\nimport math\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nclr.AddReference(\"RevitAPIUI\")\r\nfrom Autodesk.Revit.UI import *\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.DB import ElementId as DBElementId\r\nfrom Autodesk.Revit.DB import ElementTransformUtils as DBElementTransformUtils\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\n\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nimport clr\r\n\r\nglobal count\r\ncount = 0\r\ndef createFam(LineForFamily, CurFamSymbol):\r\n\tfeetToMm = 0.00328084\r\n\t\r\n\t#get base points height\r\n\tcol_SurveyP = ElementCategoryFilter(BuiltInCategory.OST_SharedBasePoint)\r\n\tsurveyPoints = FilteredElementCollector(doc).WherePasses(col_SurveyP).ToElements()\r\n\tsurveyPoint_Z = surveyPoints[0].LookupParameter(\"Отм\").AsDouble()\r\n\tcol_BaseP = ElementCategoryFilter(BuiltInCategory.OST_ProjectBasePoint)\r\n\tbasePoints = FilteredElementCollector(doc).WherePasses(col_BaseP).ToElements()\t\r\n\tbasePoint_Z = basePoints[0].LookupParameter(\"Отм\").AsDouble()\t\t\r\n\t\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\t#create line for line family\r\n\t\r\n\t#create or get level for line family\r\n\tMyLevels = FilteredElementCollector(doc).OfClass(Level).ToElements()\r\n\tbaseLevel = 0\r\n\tIsBaseLevelExist = False\r\n\tb = basePoint_Z\r\n\tfor level in MyLevels:\r\n\t\ta = level.Elevation\r\n\t\t\r\n\t\tdopusk2mm = abs(a + b)\r\n\t\t#if level.Name == \"LevelAbsolutZero\":\r\n\t\t\t#TaskDialog.Show(\"qwe\",str(dopusk2mm))\r\n\t\t\t#TaskDialog.Show(\"qwe\",str(dopusk2mm))\r\n\t\t\t#TaskDialog.Show(\"qwe\",str(b))\r\n\t\t\t\t\t\t\r\n\t\tif level.Name == \"LevelAbsolutZero\": \r\n\t\t\tIsBaseLevelExist = True\r\n\t\t\tSurveyLevel = level\r\n\t\t\tif dopusk2mm > (2*feetToMm):\r\n\t\t\t\tlevel.Elevation = -basePoint_Z\r\n\t\t\tbreak\r\n\tif not IsBaseLevelExist:\r\n\t\tSurveyLevel = Level.Create(doc, 0)\r\n\t\tSurveyLevel.Name = \"LevelAbsolutZero\"\t\r\n\tST = Structure.StructuralType.NonStructural\r\n\tnewobj = doc.Create.NewFamilyInstance(LineForFamily, CurFamSymbol, SurveyLevel, ST)\r\n\tp = newobj.LookupParameter(\"Доп_смещение_начало\")\r\n\tp.Set(additional_height*feetToMm)\r\n\tp = newobj.LookupParameter(\"Доп_смещение_конец\")\r\n\tp.Set(additional_height*feetToMm)\r\n\t\r\n\tTransactionManager.Instance.TransactionTaskDone()\r\n\treturn \t\r\n\t\r\ndef insertSections():\r\n\tMyFamilySymbols = FilteredElementCollector(doc).OfClass(FamilySymbol).ToElements()\r\n\tCurFamSymbol = 0\r\n\tfor famS in MyFamilySymbols:\r\n\t    if famS.FamilyName == CableFamilyName:\r\n\t    \tCurFamSymbol = famS\r\n\t    \tbreak\r\n\t\r\n\tll=0\r\n\tdPointStartOnGround = []\r\n\tdPointCenterOnGround = []\r\n\tdPointEndOnGround = []\r\n\tiLine = 0\r\n\t\r\n\tfor modelLine in modelLines:\r\n\t\tXyzStartPoint = modelLine.Location.Curve.GetEndPoint(0)\r\n\t\r\n\t\tXyzEndPoint = modelLine.Location.Curve.GetEndPoint(1)\r\n\t\tLineForFamily = Line.CreateBound(XyzStartPoint,XyzEndPoint)\r\n\t\tcreateFam(LineForFamily, CurFamSymbol)\r\n\treturn 1\r\n\t\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n\r\nmodelLines = UnwrapElement(IN[0])\r\nCableFamilyName = IN[1]\r\nadditional_height = IN[2]\r\nfeetToMm = 0.00328084\r\n\r\nif modelLines:\r\n\tinsertSections()\r\n\tTaskDialog.Show(\"Оповещение!\", 'Элементы по линии модели вставлены!')\r\n\tOUT = \"Done\"\r\nelse:\r\n\tOUT = \"No\"\r\n",
+      "VariableInputPorts": true,
+      "Id": "c2b0d4c926ec4997ad8ce3973d7be1a0",
+      "Inputs": [
+        {
+          "Id": "b80e1cdd1c174c7e9b1a5710f2ddc73a",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "ce253f41c3864f80b9fed261af714382",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "90b2ea0435464cc5b6bd5c2add6a0009",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "dee9de6d70ba4645be2eb1bca5e578fe",
+          "Name": "OUT",
+          "Description": "Результат сценария Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение встроенного сценария IronPython."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nimport sys\r\nimport System\r\nfrom System import Array\r\nfrom System.Collections.Generic import *\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\nDynPoint = Point\r\nDynLine = Line\r\nDynCurve = Curve\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nclr.AddReference(\"RevitAPIUI\")\r\n\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.UI import *\r\n\r\ndef TakePointOnElement(elementOnLine, position):\r\n\tpoint = elementOnLine.Location.Curve.GetEndPoint(position)\r\n\tif position == 0:\r\n\t\tadditionalZ = elementOnLine.LookupParameter(\"Доп_смещение_начало\").AsDouble()\r\n\telif position == 1:\r\n\t\tadditionalZ = elementOnLine.LookupParameter(\"Доп_смещение_конец\").AsDouble()\r\n\tcurP = XYZ(point.X, point.Y, point.Z + additionalZ)\r\n\treturn curP\r\n\r\ndef IsAlmostEqualXYZ(a,b):\r\n\tdx1x2 = abs(a.X - b.X)\r\n\tdy1y2 = abs(a.Y - b.Y)\r\n\tdz1z2 = abs(a.Z - b.Z)\r\n\tif (dx1x2 < 2*feetToMm) and (dy1y2 < 2*feetToMm) and (dz1z2 < 2*feetToMm):\r\n\t\treturn True\r\n\treturn False\r\n\r\ndef SearchNextFirstSection(sections):\r\n\r\n\tisSec1FirstSection = True\r\n\tfor sec1 in sections:\r\n\t\tstarPoint1 = TakePointOnElement(sec1, 0)\r\n\t\tfor sec2 in sections:\r\n\t\t\tendPoint2 = TakePointOnElement(sec2, 1)\r\n\t\t\tif IsAlmostEqualXYZ(starPoint1, endPoint2):\r\n\t\t\t\tisSec1FirstSection = False\r\n\t\t\t\tbreak\r\n\t\tif isSec1FirstSection:\r\n\t\t\treturn sec1\t\t\r\n\t\tisSec1FirstSection = True\r\n\treturn False\r\n\t\r\ndef FindNextSection(sec1, sections):\r\n\t#Добавим в сборку\r\n\tendPoint1 = TakePointOnElement(sec1, 1)\r\n\tfor sec2 in sections:\r\n\t\tstarPoint2 = TakePointOnElement(sec2, 0)\r\n\t\tif IsAlmostEqualXYZ(endPoint1, starPoint2):\t\r\n\t\t\treturn sec2\t\r\n\treturn False\t\r\n\t\r\ndef GetElements(FamilyNameForGet):\r\n\r\n\tFilteredElements = FilteredElementCollector(doc)\r\n\tFilteredElements.OfClass(FamilyInstance)\r\n\tFilteredElements.WhereElementIsNotElementType()\r\n\tFilteredElements.ToElements()\r\n\tsections = []\r\n\t#Хватаем все кабели в проекте\r\n\tfor element in FilteredElements:\t\r\n\t\tif element.Symbol.FamilyName == FamilyNameForGet:\r\n\t\t\tsections.append(element)\r\n\t\t\t\r\n\t#Формируем список в формате кабель/номер кабеля/номер отрезка в кабеле по порядку\r\n\t\r\n\tlines = []\r\n\tstarPoint = []\r\n\tFirstSections = []\r\n\t\r\n\tcount = 0\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\tMainSectionsSet = []\r\n\tNset = 1\r\n\tNsectionInSet = 1\r\n\tNextFirstSection = SearchNextFirstSection(sections)\r\n\t#sectionsSet [0] - id отрезка; [1] - номер набора; [2] - номер отрезка; [3] - высота до начала; [4] - высота до конца\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\twhile NextFirstSection:\r\n\t\tNextFirstSection.LookupParameter(\"N_Набора\").Set(Nset)\r\n\t\tNextFirstSection.LookupParameter(\"N_Отрезка\").Set(NsectionInSet)\r\n\t\tlist = [NextFirstSection.Id, Nset, NsectionInSet,0,0]\r\n\t\tMainSectionsSet.append(list)\r\n\t\tNsectionInSet = NsectionInSet + 1\r\n\t\tsections.remove(NextFirstSection)\r\n\t\tnextSection = FindNextSection(NextFirstSection, sections)\r\n\t\twhile nextSection:\r\n\t\t\tnextSection.LookupParameter(\"N_Набора\").Set(Nset)\r\n\t\t\tnextSection.LookupParameter(\"N_Отрезка\").Set(NsectionInSet)\r\n\t\t\tlist = [nextSection.Id, Nset, NsectionInSet,0,0]\r\n\t\t\tMainSectionsSet.append(list)\r\n\t\t\tNsectionInSet = NsectionInSet + 1\r\n\t\t\tsections.remove(nextSection)\r\n\t\t\tnextSection = FindNextSection(nextSection, sections)\r\n\t\tNextFirstSection = SearchNextFirstSection(sections)\r\n\t\tNset = Nset + 1\r\n\t\tNsectionInSet = 1\r\n\tTransactionManager.Instance.TransactionTaskDone()\t\t\r\n\tNset = 1\r\n\tNset1 = 1\r\n\tNset2 = 1\r\n\tNsectionInSet = 1\r\n\ttuneRequire = False\r\n\tstartJ = 0\r\n\tMainSectionsSet_Filter = []\r\n\tisLastElement = False\r\n\tfor i in xrange(0, len(MainSectionsSet), 1):\r\n\t\tsec1 = doc.GetElement(MainSectionsSet[i][0])\r\n\t\tNset1 = MainSectionsSet[i][1]\r\n\t\t\r\n\t\tif i == len(MainSectionsSet)-1:\r\n\t\t\tisLastElement = True\r\n\t\telse:\r\n\t\t\tsec2 = doc.GetElement(MainSectionsSet[i+1][0])\t\r\n\t\t\tNset2 = MainSectionsSet[i+1][1]\r\n\t\t\t\r\n\t\ttuneRequire = tuneRequire or sec1.LookupParameter(\"Требуется_настройка\").AsInteger()\r\n\t\t\r\n\t\t#TaskDialog.Show(\"qwe\",str(tuneRequire))\r\n\t\tif ((Nset1 != Nset2) or isLastElement) and (tuneRequire):\r\n\t\t\t#TaskDialog.Show(\"qwe\",str(\"enter\"))\r\n\t\t\tfor j in xrange(startJ, i+1, 1):\r\n\t\t\t\tsecID = MainSectionsSet[j][0]\r\n\t\t\t\tNset = MainSectionsSet[j][1]\r\n\t\t\t\tNsectionInSet = MainSectionsSet[j][2]\r\n\t\t\t\tlist = [secID, Nset, NsectionInSet,0,0]\r\n\t\t\t\tMainSectionsSet_Filter.append(list)\r\n\t\t\t\t\r\n\t\tif Nset1 != Nset2:\r\n\t\t\ttuneRequire\t= False\r\n\t\t\tstartJ = i + 1\r\n\treturn MainSectionsSet_Filter\r\n\r\n\r\nfrom Autodesk.Revit.UI.Selection import *\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application \r\nuidoc = uiapp.ActiveUIDocument\r\n\r\n\r\nFamilyNameForGet = IN[0]\r\nnProgramm = IN[1]\r\nfeetToMm = 0.00328084\r\n\r\n\r\n\r\nif (nProgramm == 2) or (nProgramm == 3):\r\n\tMainSectionsSet_Filter = GetElements(FamilyNameForGet)\r\n\tMainSectionsSet_Filter.insert(0,FamilyNameForGet)\r\n\tif nProgramm == 2:\r\n\t\tMainSectionsSet_Filter.insert(0,\"programm 2\")\r\n\telse:\r\n\t\tMainSectionsSet_Filter.insert(0,\"programm 3\")\t\t\r\n\tOUT = MainSectionsSet_Filter\r\nelse:\r\n\tOUT = []\r\n\r\n\r\n",
+      "VariableInputPorts": true,
+      "Id": "302ae630a5644ac5953b01f20f4bc5b5",
+      "Inputs": [
+        {
+          "Id": "962e462e965242bb8608b38a81305f4e",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "ea0b06d611604ee391d7c2535250211f",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "6f91e27aa40749eab05fe829e69cd54f",
+          "Name": "OUT",
+          "Description": "Результат сценария Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение встроенного сценария IronPython."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"Траншея_v1\";\n\"Типовой кабель_v4\";\n\"Труба под путями_v1\";\n\"Рельсошпальная решетка_v4\";",
+      "Id": "6aeb8f17aee548338d56dfcdb7723a94",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "fa90f47a9a424b52b68f4875a1edb655",
+          "Name": "",
+          "Description": "Значение выражения в строке 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "81fe83281b824cd1b7a5bd718e848599",
+          "Name": "",
+          "Description": "Значение выражения в строке 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "1357ecf99de54c32a4ca9cc0185dbf5a",
+          "Name": "",
+          "Description": "Значение выражения в строке 3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "3b6cbcb0c0f34031be8e3d578613a3e3",
+          "Name": "",
+          "Description": "Значение выражения в строке 4",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Обеспечивает возможность непосредственного авторства кода DesignScript"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Загрузить стандартную библиотеку Python и библиотеку DesignScript\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\nDynPoint = Point\r\nDynLine = Line\r\nDynSurface = Surface\r\nimport math\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nclr.AddReference(\"RevitAPIUI\")\r\nfrom Autodesk.Revit.UI import *\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.DB import ElementId as DBElementId\r\nfrom Autodesk.Revit.DB import ElementTransformUtils as DBElementTransformUtils\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\n\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nimport clr\r\n\r\nglobal count\r\ncount = 0\r\n\r\ndef GetAllTopoPoints():\r\n\ttopoFilter = ElementCategoryFilter(BuiltInCategory.OST_Topography)\r\n\ttopoSurfaces = FilteredElementCollector(doc).WherePasses(topoFilter).ToElements()\r\n\t#topoSurfaces = FilteredElementCollector(doc).WherePasses(topoFilter).ToElements()\r\n\ttopo_points = []\r\n\ttopo_points = topoSurfaces[0].GetPoints()\r\n\tif len(topoSurfaces)>1:\r\n\t\tfor i in xrange(1, len(topoSurfaces), 1):\r\n\t\t\ttopo_points = topo_points + topoSurfaces[i].GetPoints()\r\n\treturn topo_points\r\n\r\ndef PlaceFamInst(sec, ShiftFromTheGround, groundZ1, groundZ2):\r\n\tp = sec.LookupParameter(\"1_ВысотаОтЗемлиДоНачала\")\r\n\tp.Set(ShiftFromTheGround)\r\n\tp = sec.LookupParameter(\"2_ВысотаОтЗемлиДоКонца\")\r\n\tp.Set(ShiftFromTheGround)\r\n\tp = sec.LookupParameter(\"3_ВысотаОт0доЗемлиДляНачала\")\r\n\tp.Set(groundZ1)\t\r\n\tp = sec.LookupParameter(\"4_ВысотаОт0доЗемлиДляКонца\")\r\n\tp.Set(groundZ2)\t\r\n\treturn 0\t\r\n\t\r\ndef LengthXYTopoPointsToPoint(topoPoints,curPoint):\r\n\ttopoPointsAndLength=[]\r\n\ti = 0\r\n\tfor topoPoint in topoPoints:\r\n\t\tlength = math.sqrt((topoPoint.X - curPoint.X)**2 + (topoPoint.Y - curPoint.Y)**2)\r\n\t\tlist = [topoPoint, length]\r\n\t\ttopoPointsAndLength.append(list)\r\n\treturn topoPointsAndLength\r\n\t\r\ndef PointOnTheGround(topoPointsAndLength, curPoint):\r\n\tO = curPoint\t\r\n\ttopoPointsAndLength.sort(key=lambda i: i[1])\r\n\tif \tlen(topoPointsAndLength) > 200:#ограничемся 200ю ближайшими точками\r\n\t\tstop = 200\r\n\telse:\r\n\t\tstop = len(topoPointsAndLength)\r\n\tzMax = 0\r\n\tzMin = 0\r\n\tfor i in xrange(0, stop):#Найдем макс и мин точки в области осмотра\r\n\t\tif zMax < topoPointsAndLength[i][0].Z:\r\n\t\t\tzMax = topoPointsAndLength[i][0].Z\r\n\t\tif zMin > topoPointsAndLength[i][0].Z:\r\n\t\t\tzMin = topoPointsAndLength[i][0].Z\t\r\n\t\r\n\tdCurLine = DynLine.ByStartPointEndPoint(DynPoint.ByCoordinates(O.X,O.Y,zMin-1000), DynPoint.ByCoordinates(O.X,O.Y,zMax+1000))\r\n\t\r\n\tYesPoint = False\r\n\tDynIntersectionPoint = 0\r\n\tcheckList = []\r\n\tglobal count\r\n\tstop = 0\r\n\tpointsLeft = len(topoPointsAndLength)\r\n\twhile stop < len(topoPointsAndLength):\r\n\t\tif pointsLeft > 10:\r\n\t\t\tstop = stop + 10\r\n\t\telse:\r\n\t\t\tstop = pointsLeft\r\n\t\tfor i1 in xrange(0, stop):\r\n\t\t\tA = topoPointsAndLength[i1][0]\r\n\t\t\tfor i2 in xrange(i1+1, stop):\r\n\t\t\t\tB = topoPointsAndLength[i2][0]\r\n\t\t\t\tfor i3 in xrange(i2+1, stop):\t\t\t\t\t \r\n\t\t\t\t\tcount = count + 1\r\n\t\t\t\t\tC = topoPointsAndLength[i3][0]\r\n\t\t\t\t\tOAxAB = (A.X - O.X) * (B.Y - A.Y) - (B.X - A.X) * (A.Y - O.Y)\r\n\t\t\t\t\tOBxBC = (B.X - O.X) * (C.Y - B.Y) - (C.X - B.X) * (B.Y - O.Y)\r\n\t\t\t\t\tOCxCA = (C.X - O.X) * (A.Y - C.Y) - (A.X - C.X) * (C.Y - O.Y)\r\n\t\t\t\t\tif ((OAxAB >= 0) and (OBxBC >= 0) and (OCxCA >= 0)) or ((OAxAB <= 0) and (OBxBC <= 0) and (OCxCA <= 0)):\r\n\t\t\t\t\t\tAO = math.sqrt((A.X - O.X)**2 + (A.Y - O.Y)**2)\r\n\t\t\t\t\t\tBO = math.sqrt((B.X - O.X)**2 + (B.Y - O.Y)**2)\r\n\t\t\t\t\t\tCO = math.sqrt((C.X - O.X)**2 + (C.Y - O.Y)**2)\r\n\t\t\t\t\t\tkAz = BO * CO / (AO + 0.01) #коэфициент силы координаты Z для точки A\r\n\t\t\t\t\t\tkBz = AO * CO / (BO + 0.01)\r\n\t\t\t\t\t\tkCz = AO * BO / (CO + 0.01)\r\n\t\t\t\t\t\tkkAz = kAz/(kAz + kBz + kCz)\r\n\t\t\t\t\t\tkkBz = kBz/(kAz + kBz + kCz)\r\n\t\t\t\t\t\tkkCz = kCz/(kAz + kBz + kCz)\r\n\t\t\t\t\t\tZ = A.Z * kkAz + B.Z * kkBz + C.Z * kkCz\r\n\t\t\t\t\t\treturn Z\t\t\t\t\t\t\t\t\t\t\r\n\r\ndef riseElements():\r\n\tgroundZ1 = []\r\n\tgroundZ2 = []\r\n\ti = 0\r\n\t\r\n\ttopo_points = GetAllTopoPoints()\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\t#Cab_NCab_Nsec [0] - кабель; [1] - номер кабеля; [2] - номер отрезка; [3] - высота до начала; [4] - высота до конца\r\n\tfor secSet in MainSectionsSet:\r\n\t\tsec = doc.GetElement(secSet[0])\r\n\t\tXyzStartPoint = sec.Location.Curve.GetEndPoint(0)\r\n\t\tdynStartPoint = DynPoint.ByCoordinates(XyzStartPoint.X, XyzStartPoint.Y, XyzStartPoint.Z)\r\n\t\tXyzEndPoint = sec.Location.Curve.GetEndPoint(1)\r\n\t\tdynEndPoint = DynPoint.ByCoordinates(XyzEndPoint.X, XyzEndPoint.Y, XyzEndPoint.Z)\r\n\t\t\r\n\t\tlenTopoPStart = LengthXYTopoPointsToPoint(topo_points,XyzStartPoint)\r\n\t\tlenTopoPEnd = LengthXYTopoPointsToPoint(topo_points,XyzEndPoint)\t\r\n\t\t#TaskDialog.Show(\"Оповещение!\", str(PointOnTheGround(lenTopoPStart, dynStartPoint)))\r\n\t\tgroundZ1.append(PointOnTheGround(lenTopoPStart, dynStartPoint))\r\n\t\t\r\n\t\tgroundZ2.append(PointOnTheGround(lenTopoPEnd, dynEndPoint))\r\n\t\r\n\t\tPlaceFamInst(sec, ShiftFromTheGround, groundZ1[i], groundZ2[i])\r\n\t\t\r\n\t\tMainSectionsSet[i][3] = groundZ1[i] + ShiftFromTheGround + sec.LookupParameter(\"Доп_смещение_начало\").AsDouble()\r\n\t\tMainSectionsSet[i][4] = groundZ2[i] + ShiftFromTheGround + sec.LookupParameter(\"Доп_смещение_конец\").AsDouble()\t\r\n\t\ti = i + 1\r\n\t\t\r\n\tTransactionManager.Instance.TransactionTaskDone()\r\n\r\n\treturn 1\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n\r\nMainSectionsSet = IN[0]\r\nfeetToMm = 0.00328084\r\nShiftFromTheGround=IN[1] * feetToMm\r\n\r\nif MainSectionsSet:\r\n\telementTypeString = MainSectionsSet.pop(1)\r\n\tprogrammNum = MainSectionsSet.pop(0)\r\n\tif programmNum == \"programm 2\":\r\n\t\tgoodLevel = True\r\n\t\tfor secSet in MainSectionsSet:\r\n\t\t\tsec = doc.GetElement(secSet[0])\r\n\t\t\telementLevelName = sec.Host.Name\r\n\t\t\t#elementLevelName=123\r\n\t\t\tif elementLevelName != \"LevelAbsolutZero\":\r\n\t\t\t\tTaskDialog.Show(\"Оповещение!\", \"Объекты не на слое LevelAbsolutZero\")\r\n\t\t\t\tgoodLevel = False\t\r\n\t\tif goodLevel:\r\n\t\t\triseElements()\r\n\t\t\tMainSectionsSet.insert(0, elementTypeString)\r\n\t\t\tMainSectionsSet.insert(0, programmNum)\r\n\t\t\t#TaskDialog.Show(\"Оповещение!\", \"Отрезки подняты\")\r\n\t\t\tOUT = MainSectionsSet\r\n\t\telse: \t\r\n\t\t\tOUT = []\r\n\telse:\r\n\t\tOUT = []\r\nelse:\r\n\tOUT = []\r\n",
+      "VariableInputPorts": true,
+      "Id": "e338751fc9f5474fa483ddc1cc02ff8b",
+      "Inputs": [
+        {
+          "Id": "cf5dbd763d4e4e67a43572dfae80d575",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a4581f7be53c4ad19fbd778ffee7397d",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c65a424d5b1b4176a81e44afa760f6e4",
+          "Name": "OUT",
+          "Description": "Результат сценария Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение встроенного сценария IronPython."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "-800;",
+      "Id": "a8054195454a482abe1ca49d66389102",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "ec49b92861984fdfb00cda863f14a833",
+          "Name": "",
+          "Description": "Значение выражения в строке 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Обеспечивает возможность непосредственного авторства кода DesignScript"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": false,
+      "Id": "28f5589a53134edb9b1574dd9103fa1b",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "d4ab40d68e2b4f4ba6a460969790c137",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выбор между значениями true и false."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Загрузить стандартную библиотеку Python и библиотеку DesignScript\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\nDynPoint = Point\r\nDynLine = Line\r\nDynSurface = Surface\r\nimport math\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nclr.AddReference(\"RevitAPIUI\")\r\nfrom Autodesk.Revit.UI import *\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.DB import ElementId as DBElementId\r\nfrom Autodesk.Revit.DB import ElementTransformUtils as DBElementTransformUtils\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\n\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nimport time\r\n\r\ndef Collinearity(A,B):\r\n\tk1xi = A.Y*B.Z - A.Z*B.Y\r\n\tk2xj = A.X*B.Z - A.Z*B.X\r\n\tk3xk = A.X*B.Y - A.Y*B.X\r\n\tif (k1xi == 0) and (k2xj == 0) and (k3xk == 0):\r\n\t\treturn True\r\n\telse:\r\n\t\treturn False\r\n\t\r\ndef AngleBetweenVectors(A,B):\r\n\tmodA = math.sqrt(A.X**2 + A.Y**2 + A.Z**2)\r\n\tmodB = math.sqrt(B.X**2 + B.Y**2 + B.Z**2)\r\n\tscalAxB = A.X*B.X + A.Y*B.Y + A.Z*B.Z\r\n\treturn (math.degrees(math.acos(scalAxB/(modA*modB))))\r\n\t\r\ndef Perpendicular_z0(X,Y):\r\n\tnapravlenie = 1 #1 если вправо, -1 если влево\r\n\tanyLen = 10 #любой X или Y для перпендикуляра\r\n\tif (((X >= 0) and (Y > 0)) or ((X < 0) and (Y > 0))): \r\n\t\tperp = XYZ(anyLen,-X/Y*anyLen,0)\r\n\telif (Y == 0) and (X > 0):\r\n\t\tperp = XYZ(0,-anyLen,0)\r\n\telif (Y == 0) and (X < 0):\r\n\t\tperp = XYZ(0,anyLen,0)\r\n\telse:\r\n\t\tperp = XYZ(-anyLen,X/Y*anyLen,0)\r\n\tperp = XYZ(perp.X*napravlenie, perp.Y*napravlenie, perp.Z*napravlenie)\r\n\treturn perp\r\n\t\r\ndef vectorMult(a,b):\r\n\tX = a.Y*b.Z - a.Z*b.Y\r\n\tY = a.Z*b.X - a.X*b.Z\r\n\tZ = a.X*b.Y - a.Y*b.X\r\n\tc = XYZ(X,Y,Z)\r\n\treturn c\r\n\t\r\ndef scalarMult(a,b):\r\n\tc = a.X*b.X + a.Y*b.Y + a.Z*b.Z\r\n\treturn c\r\n\t\r\ndef BendFamInst(cab1, cab2, cab1Ground1, cab1Ground2, cab2Ground2):\t\r\n\r\n\tXyz1 = cab1.Location.Curve.GetEndPoint(0)\r\n\tXyz1 = Xyz1 + XYZ(0,0,cab1Ground1)\r\n\tXyz2 = cab1.Location.Curve.GetEndPoint(1)\r\n\tXyz2 = Xyz2 + XYZ(0,0,cab1Ground2)\r\n\tXyz3 = cab2.Location.Curve.GetEndPoint(1)\r\n\tXyz3 = Xyz3 + XYZ(0,0,cab2Ground2)\r\n\t##первый отрезок кабеляэто AB, второй отрезок кабеля это BC\r\n\tBA = XYZ(Xyz1.X - Xyz2.X, Xyz1.Y - Xyz2.Y, Xyz1.Z - Xyz2.Z)\r\n\tAB = XYZ(-BA.X,-BA.Y,-BA.Z)\r\n\tBC = XYZ(Xyz3.X - Xyz2.X, Xyz3.Y - Xyz2.Y, Xyz3.Z - Xyz2.Z)\r\n\tCB = XYZ(-BC.X,-BC.Y,-BC.Z)\r\n\t######################\r\n\tif Collinearity(BA,BC):\r\n\t\t#необходимо сбросить все параметры\r\n\t\talfa = 180\r\n\t\tbeta1 = 0\r\n\t\tbeta2 = 0\r\n\telse:\r\n\t\talfa = AngleBetweenVectors(BA,BC)\t\r\n\t\t#найдем перпендикулярный вектор для AB вправо(направление сгиба)\r\n\t\tABperp = Perpendicular_z0(AB.X, AB.Y)\r\n\t\t#найдем перпендикулярный вектор для BC вправо(направление сгиба)\r\n\t\tBCperp = Perpendicular_z0(BC.X, BC.Y)\t\t\r\n\t\t#коэффициенты плоскости векторам AB и BC\r\n\t\ta = AB.Y*BC.Z - BC.Y*AB.Z\r\n\t\tb = -(AB.X*BC.Z - BC.X*AB.Z)\r\n\t\tc = AB.X*BC.Y - BC.X*AB.Y\r\n\t\t#коэффициенты плоскости векторам AB и ABperp\r\n\t\ta1 = AB.Y*ABperp.Z - ABperp.Y*AB.Z\r\n\t\tb1 = -(AB.X*ABperp.Z - ABperp.X*AB.Z)\r\n\t\tc1 = AB.X*ABperp.Y - ABperp.X*AB.Y\r\n\t\t#коэффициенты плоскости векторам BC и BCperp\r\n\t\ta2 = BC.Y*BCperp.Z - BCperp.Y*BC.Z\r\n\t\tb2 = -(BC.X*BCperp.Z - BCperp.X*BC.Z)\r\n\t\tc2 = BC.X*BCperp.Y - BCperp.X*BC.Y\t\r\n\t\t#TaskDialog.Show(\"qwe\",str(BCperp.X) + \" \" + str(BCperp.Y))\t\r\n\t\tcosBeta1 = (a*a1 + b*b1 + c*c1)/(math.sqrt(a**2 + b**2 + c**2)*math.sqrt(a1**2 + b1**2 + c1**2))\r\n\t\tbeta1 = math.degrees(math.acos(cosBeta1))\r\n\t\tcosBeta2 = (a*a2 + b*b2 + c*c2)/(math.sqrt(a**2 + b**2 + c**2)*math.sqrt(a2**2 + b2**2 + c2**2))\r\n\t\tbeta2 = math.degrees(math.acos(cosBeta2))\r\n\t\t#Необходимо определить направление поворота одной плоскости на другую\r\n\t\tdirection1 = scalarMult(vectorMult(ABperp, BC), AB)\r\n\t\tdirection2 = scalarMult(vectorMult(BCperp, BA), BC)\r\n\t\tif direction1 < 0: #если отрицательное, то крутим против часовой стрелки\r\n\t\t\tbeta1 = -beta1\t\r\n\t\tif direction2 < 0: #если отрицательное, то крутим против часовой стрелки\r\n\t\t\tbeta2 = -beta2\r\n\t###########end if\t\r\n\tp = cab1.LookupParameter(\"6_Угол_конца\")\r\n\tp.Set(math.radians(alfa))\r\n\tp = cab2.LookupParameter(\"5_Угол_начала\")\r\n\tp.Set(math.radians(alfa))\r\n\tp = cab1.LookupParameter(\"8_Поворот_конца\")\r\n\tp.Set(math.radians(beta1))\r\n\tp = cab2.LookupParameter(\"7_Поворот_начала\")\r\n\tp.Set(math.radians(beta2))\t\r\n\t\t\r\ndef TuneAllElements():\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\tfor i in xrange(0, len(MainSectionsSet)-1, 1):\r\n\t\t#TaskDialog.Show(\"qwe\",str(Cab_NCab_Nsec_All[i][1]) + \" \" + str(Cab_NCab_Nsec_All[i][2]))\t\r\n\t\tif i == len(MainSectionsSet):\t\r\n\t\t\tbreak\r\n\t\tsec1 = doc.GetElement(MainSectionsSet[i][0])\r\n\t\tNsec1 = MainSectionsSet[i][1]\t\t\t\t\r\n\t\tsec2 = doc.GetElement(MainSectionsSet[i+1][0])\r\n\t\tNsec2 = MainSectionsSet[i+1][1]\r\n\t\tif Nsec1 == Nsec2:\r\n\t\t\t#TaskDialog.Show(\"qwe\",str(Cab_NCab_Nsec_All[i][2]) + \" \" + str(Cab_NCab_Nsec_All[i+1][2]))\t\r\n\t\t\tsec1Ground1 =  MainSectionsSet[i][3]\r\n\t\t\tsec1Ground2 =  MainSectionsSet[i][4]\r\n\t\t\tsec2Ground2 = MainSectionsSet[i+1][4]\r\n\t\t\tBendFamInst(sec1, sec2, sec1Ground1, sec1Ground2, sec2Ground2)\r\n\t\tTransactionManager.Instance.TransactionTaskDone()\r\n \r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n\r\nMainSectionsSet = IN[0]\r\n#MainSectionsSet [0] - кабель; [1] - номер кабеля; [2] - номер отрезка; [3] - высота до начала; [4] - высота до конца\r\nfeetToMm = 0.00328084\r\n\r\nif MainSectionsSet:\r\n\telementTypeString = MainSectionsSet.pop(1)\r\n\tprogrammNum = MainSectionsSet.pop(0)\r\n\tif (programmNum == \"programm 2\") and (elementTypeString == \"Типовой кабель_v4\"):\r\n\t\tTuneAllElements()\r\n\t\tTaskDialog.Show(\"Оповещение!\", 'Кабель подняли и настроили!')\r\nOUT = []\r\n\r\n",
+      "VariableInputPorts": true,
+      "Id": "d44d6b7bb10e417a8bd526bb67c1fa40",
+      "Inputs": [
+        {
+          "Id": "884bf1ff31f64ad2aa370b2002be94df",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "3c1f5d2646904e8ca8f220f3052deb5c",
+          "Name": "OUT",
+          "Description": "Результат сценария Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение встроенного сценария IronPython."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "str;",
+      "Id": "f40f2679379b4a6e880ad1c389a9e72d",
+      "Inputs": [
+        {
+          "Id": "b70b547f107e45f886d5d153f079ef4c",
+          "Name": "str",
+          "Description": "str",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "0ebe52edde344ea781811e1853936ea2",
+          "Name": "",
+          "Description": "Значение выражения в строке 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Обеспечивает возможность непосредственного авторства кода DesignScript"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "a15d90d14d7d422283136f7cdea5e8a9",
+      "Inputs": [
+        {
+          "Id": "f114ca9128d640d89ab2e94abd99489a",
+          "Name": "",
+          "Description": "Узел для оценки.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "68d0c7eb103e451796121ca33c4586bb",
+          "Name": "",
+          "Description": "Просмотр содержимого.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Визуализация входного элемента узла."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": true,
+      "Id": "e10f77a781d74e5aa1c11290263d96b4",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "812a7b77e7364f3a92cda6df8d39a866",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выбор между значениями true и false."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Загрузить стандартную библиотеку Python и библиотеку DesignScript\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\nDynPoint = Point\r\nDynLine = Line\r\nDynSurface = Surface\r\nimport math\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nclr.AddReference(\"RevitAPIUI\")\r\nfrom Autodesk.Revit.UI import *\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.DB import ElementId as DBElementId\r\nfrom Autodesk.Revit.DB import ElementTransformUtils as DBElementTransformUtils\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\n\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nimport time\r\n\r\ndef Collinearity(A,B):\r\n\tk1xi = abs(A.Y*B.Z - A.Z*B.Y)\r\n\tk2xj = abs(A.X*B.Z - A.Z*B.X)\r\n\tk3xk = abs(A.X*B.Y - A.Y*B.X)\r\n\tif (k1xi < 0.1*feetToMm) and (k2xj < 0.1*feetToMm) and (k3xk < 0.1*feetToMm):\r\n\t\treturn True\r\n\telse:\r\n\t\treturn False\r\n\t\r\ndef AngleBetweenVectors(A,B):\r\n\tmodA = math.sqrt(A.X**2 + A.Y**2 + A.Z**2)\r\n\tmodB = math.sqrt(B.X**2 + B.Y**2 + B.Z**2)\r\n\tscalAxB = A.X*B.X + A.Y*B.Y + A.Z*B.Z\r\n\treturn (math.degrees(math.acos(scalAxB/(modA*modB))))\r\n\t\r\ndef Perpendicular_z0(X,Y):\r\n\tnapravlenie = 1 #1 если вправо, -1 если влево\r\n\tanyLen = 10 #любой X или Y для перпендикуляра\r\n\tif (((X >= 0) and (Y > 0)) or ((X < 0) and (Y > 0))): \r\n\t\tperp = XYZ(anyLen,-X/Y*anyLen,0)\r\n\telif (Y == 0) and (X > 0):\r\n\t\tperp = XYZ(0,-anyLen,0)\r\n\telif (Y == 0) and (X < 0):\r\n\t\tperp = XYZ(0,anyLen,0)\r\n\telse:\r\n\t\tperp = XYZ(-anyLen,X/Y*anyLen,0)\r\n\tperp = XYZ(perp.X*napravlenie, perp.Y*napravlenie, perp.Z*napravlenie)\r\n\treturn perp\r\n\t\r\ndef vectorMult(a,b):\r\n\tX = a.Y*b.Z - a.Z*b.Y\r\n\tY = a.Z*b.X - a.X*b.Z\r\n\tZ = a.X*b.Y - a.Y*b.X\r\n\tc = XYZ(X,Y,Z)\r\n\treturn c\r\n\t\r\ndef scalarMult(a,b):\r\n\tc = a.X*b.X + a.Y*b.Y + a.Z*b.Z\r\n\treturn c\r\n\t\r\ndef BendFamInst(sec1, sec2, sec1Ground1, sec1Ground2, sec2Ground2):\t\r\n\r\n\tXyz1 = sec1.Location.Curve.GetEndPoint(0)\r\n\tXyz1 = Xyz1 + XYZ(0,0,sec1Ground1)\r\n\tXyz2 = sec1.Location.Curve.GetEndPoint(1)\r\n\tXyz2 = Xyz2 + XYZ(0,0,sec1Ground2)\r\n\tXyz3 = sec2.Location.Curve.GetEndPoint(1)\r\n\tXyz3 = Xyz3 + XYZ(0,0,sec2Ground2)\r\n\t##первый отрезок кабеля это AB, второй отрезок кабеля это BC\r\n\t\r\n\tBA = XYZ(Xyz1.X - Xyz2.X, Xyz1.Y - Xyz2.Y, Xyz1.Z - Xyz2.Z)\r\n\tBAhorizont = XYZ(BA.X, BA.Y, 0)\t\r\n\tAB = XYZ(-BA.X,-BA.Y,-BA.Z)\r\n\tBC = XYZ(Xyz3.X - Xyz2.X, Xyz3.Y - Xyz2.Y, Xyz3.Z - Xyz2.Z)\r\n\tBChorizont = XYZ(BC.X, BC.Y, 0)\r\n\tCB = XYZ(-BC.X,-BC.Y,-BC.Z)\r\n\t######################\r\n\tdirectionAlfa = 0\r\n\tif Collinearity(BA,BC):\r\n\t\t#необходимо сбросить все параметры\r\n\t\talfa = 180\r\n\t\tbeta = 90\t\r\n\telse:\r\n\t\tif Collinearity(BAhorizont,BChorizont):\r\n\t\t\talfa = 180\t\t\t\t\r\n\t\telse:\r\n\t\t\talfa = AngleBetweenVectors(BAhorizont,BChorizont)\t\r\n\t\t\t#Найдем вправо ли направлено сл. траншея или влево\r\n\t\t\tvectorZ = XYZ(0,0,1)\r\n\t\t\tdirectionAlfa = scalarMult(vectorMult(BAhorizont, BChorizont), vectorZ) #Если больше нуля, тогда вправо, если меньше то влево\r\n\t\t\t\r\n\t\t\r\n\t\t#найдем перпендикулярный вектор для BC вправо(направление сгиба)\r\n\t\t#BCperp = Perpendicular_z0(BC.X, BC.Y)\t\r\n\r\n\t\t#BAshift =  XYZ(BA.X, BA.Y, BA.Z + 100)\r\n\t\t#коэффициенты плоскости заданной векторам BA и BAshift\r\n\t\t#a = BA.Y*BAshift.Z - BAshift.Y*BA.Z\r\n\t\t#b = -(BA.X*BAshift.Z - BAshift.X*BA.Z)\r\n\t\t#c = BA.X*BAshift.Y - BAshift.X*BA.Y\r\n\t\t#v = math.sqrt(a**2 + b**2 + c**2)\r\n\t\t#normal = XYZ(a/v,b/v,c/v)\r\n\t\t#Проекция вектора BC на плоскость qPr=q-dot(q-p,n)*n\r\n\t\t#BC_ = BC - scalarMult(BC,normal)*normal\r\n\t\tbeta1 = -(90 - AngleBetweenVectors(BA,XYZ(0,0,1)))*2\r\n\t\tbeta2 = -(90 - AngleBetweenVectors(BC,XYZ(0,0,1)))*2\r\n\t\t#TaskDialog.Show(\"qwe\", str(BC_.X)+\" \"+str(BC_.Y)+\" \"+str(BC_.Z))\r\n\t\t#TaskDialog.Show(\"qwe\", str(beta1))\r\n\t\t#TaskDialog.Show(\"qwe\", str(beta2))\r\n\t\t#Найдем куда поворачивать, в плюс или в минус\r\n\t\t#найдем перпендикулярный вектор для AB вправо\r\n\t\t#ABperp = Perpendicular_z0(AB.X, AB.Y)\r\n\t\t#directionBeta = scalarMult(vectorMult(BA, BC_), ABperp) #Если больше нуля, тогда по часовой, если меньше, тогда против\r\n\t\t#TaskDialog.Show(\"qwe\", str(directionBeta))\r\n\t\t#коэффициенты плоскости векторам AB и ABperp\r\n\t\t#a1 = AB.Y*ABperp.Z - ABperp.Y*AB.Z\r\n\t\t#b1 = -(AB.X*ABperp.Z - ABperp.X*AB.Z)\r\n\t\t#c1 = AB.X*ABperp.Y - ABperp.X*AB.Y\r\n\t\t#коэффициенты плоскости векторам BC и BCperp\r\n\t\t#a2 = BC.Y*BCperp.Z - BCperp.Y*BC.Z\r\n\t\t#b2 = -(BC.X*BCperp.Z - BCperp.X*BC.Z)\r\n\t\t#c2 = BC.X*BCperp.Y - BCperp.X*BC.Y\t\r\n\t\t#TaskDialog.Show(\"qwe\",str(BCperp.X) + \" \" + str(BCperp.Y))\t\r\n\t\t#cosBeta1 = (a*a1 + b*b1 + c*c1)/(math.sqrt(a**2 + b**2 + c**2)*math.sqrt(a1**2 + b1**2 + c1**2))\r\n\t\t#beta1 = math.degrees(math.acos(cosBeta1))\r\n\t\t#cosBeta2 = (a*a2 + b*b2 + c*c2)/(math.sqrt(a**2 + b**2 + c**2)*math.sqrt(a2**2 + b2**2 + c2**2))\r\n\t\t#beta2 = math.degrees(math.acos(cosBeta2))\r\n\t\t#Необходимо определить направление поворота одной плоскости на другую\r\n\t\t#direction1 = scalarMult(vectorMult(ABperp, BC), AB)\r\n\t\t#direction2 = scalarMult(vectorMult(BCperp, BA), BC)\r\n\t\tif directionAlfa < 0: \r\n\t\t\talfa = -alfa\t\r\n\t\t#if directionBeta < 0:\r\n\t\t#\tbeta = -beta\r\n\t###########end if\t\r\n\tp = sec1.LookupParameter(\"01_Конец_А_угол_горизонт\")\r\n\tp.Set(math.radians(alfa))\r\n\tp = sec2.LookupParameter(\"02_Начало_А_угол_горизонт\")\r\n\tp.Set(math.radians(alfa))\r\n\tp = sec1.LookupParameter(\"03_Конец_B_угол_верт\")\r\n\tp.Set(math.radians(beta1))\r\n\tp = sec2.LookupParameter(\"04_Начало_B_угол_верт\")\r\n\tp.Set(math.radians(beta2))\r\n\t#p = cab2.LookupParameter(\"5_Угол_начала\")\r\n\t#p.Set(math.radians(90 - alfa/2))03_Конец_B_угол_верт\r\n\t#p = cab1.LookupParameter(\"8_Поворот_конца\")\r\n\t#p.Set(math.radians(beta1))\r\n\t#p = cab2.LookupParameter(\"7_Поворот_начала\")\r\n\t#p.Set(math.radians(beta2))\t\r\n\t\r\ndef insertLenFam():\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\tsetLength = 0\r\n\tNset1 = 1#начальный номер наборов\r\n\tfor i in xrange(0, len(MainSectionsSet), 1):\t\t\r\n\t\tsec2 = doc.GetElement(MainSectionsSet[i][0])\r\n\t\tNset2 = MainSectionsSet[i][1]\t\t\t\r\n\t\tp = sec2.LookupParameter(\"Длина_кабеля_расчетная\").AsDouble()\t\r\n\t\tif Nset1 == Nset2:\r\n\t\t\tsetLength = setLength + p\r\n\t\telse:\r\n\t\t\tsetLength = p\r\n\t\tNset1 = Nset2\r\n\t\tp = sec2.LookupParameter(\"9_Длина_кабеля_от_начала\")\r\n\t\tp.Set(setLength)\r\n\tTransactionManager.Instance.TransactionTaskDone()\r\n\treturn 1\r\n\t\t\r\n\r\ndef TuneAllElements():\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\tfor i in xrange(0, len(MainSectionsSet)-1, 1):\r\n\t\t#TaskDialog.Show(\"qwe\",str(Cab_NCab_Nsec_All[i][1]) + \" \" + str(Cab_NCab_Nsec_All[i][2]))\t\r\n\t\tif i == len(MainSectionsSet):\t\r\n\t\t\tbreak\r\n\t\tsec1 = doc.GetElement(MainSectionsSet[i][0])\r\n\t\tNsec1 = MainSectionsSet[i][1]\t\t\t\t\r\n\t\tsec2 = doc.GetElement(MainSectionsSet[i+1][0])\r\n\t\tNsec2 = MainSectionsSet[i+1][1]\r\n\t\tif Nsec1 == Nsec2:\r\n\t\t\t#TaskDialog.Show(\"qwe\",str(Cab_NCab_Nsec_All[i][2]) + \" \" + str(Cab_NCab_Nsec_All[i+1][2]))\t\r\n\t\t\tsec1Ground1 =  MainSectionsSet[i][3]\r\n\t\t\tsec1Ground2 =  MainSectionsSet[i][4]\r\n\t\t\tsec2Ground2 = MainSectionsSet[i+1][4]\r\n\t\t\tBendFamInst(sec1, sec2, sec1Ground1, sec1Ground2, sec2Ground2)\r\n\t\tTransactionManager.Instance.TransactionTaskDone()\r\n\t\t\r\ndef Unсheck_tuneRequirement():\t\t\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\tfor secSet in MainSectionsSet:\r\n\t\tsec = doc.GetElement(secSet[0])\r\n\t\tsec.LookupParameter(\"Требуется_настройка\").Set(False)\t\t\t\r\n\tTransactionManager.Instance.TransactionTaskDone()\r\n\treturn 1\r\n \r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n\r\nMainSectionsSet = IN[0]\r\nuncheckTuneReq = IN[1]\r\n#Cab_NCab_Nsec [0] - кабель; [1] - номер кабеля; [2] - номер отрезка; [3] - высота до начала; [4] - высота до конца\r\nfeetToMm = 0.00328084\r\n\r\nif MainSectionsSet:\r\n\telementTypeString = MainSectionsSet.pop(1)\r\n\tprogrammNum = MainSectionsSet.pop(0)\r\n\tif (programmNum == \"programm 2\") and (elementTypeString == \"Траншея_v1\"):\r\n\t\tTuneAllElements()\t\r\n\t\tif uncheckTuneReq:\r\n\t\t\tUnсheck_tuneRequirement()\r\n\t\t\tTaskDialog.Show(\"Оповещение!\", 'Траншея настроена, чекбокс \"Требуется_настройка\" выключен!')\r\n\t\t\tOUT = \"Done. Checkbox off\"\r\n\t\telse:\r\n\t\t\tTaskDialog.Show(\"Оповещение!\", 'Траншея настроена, чекбокс \"Требуется_настройка\" не тронут!')\r\n\t\t\tOUT = \"Done. Checkbox untouch\"\t\r\n\telse:\r\n\t\tOUT = []\r\nelse:\r\n\tOUT = []\r\n\r\n",
+      "VariableInputPorts": true,
+      "Id": "9e438bc92b284cc4a34684f2703e4611",
+      "Inputs": [
+        {
+          "Id": "83cd3bff04bc4deaafa9255c34b31188",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a3857271725a42599e30777dcfacb23b",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "99b72598bb1a4ae1b4d158b437457d2a",
+          "Name": "OUT",
+          "Description": "Результат сценария Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение встроенного сценария IronPython."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "f62ae0319b6e4f1296a507178f2b43b1",
+      "Inputs": [
+        {
+          "Id": "05ec3bc72a554f5d835cfe5b52b317a2",
+          "Name": "",
+          "Description": "Узел для оценки.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "8e6ec37307da4269a52f249f925189cd",
+          "Name": "",
+          "Description": "Просмотр содержимого.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Визуализация входного элемента узла."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "100;",
+      "Id": "734afc4f1eb942f9aba59b71e34d45f2",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "7e8c8bfec8664b499f393f23504c73ab",
+          "Name": "",
+          "Description": "Значение выражения в строке 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Обеспечивает возможность непосредственного авторства кода DesignScript"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Загрузить стандартную библиотеку Python и библиотеку DesignScript\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\nDynPoint = Point\r\nDynLine = Line\r\nDynSurface = Surface\r\nimport math\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nclr.AddReference(\"RevitAPIUI\")\r\nfrom Autodesk.Revit.UI import *\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.DB import ElementId as DBElementId\r\nfrom Autodesk.Revit.DB import ElementTransformUtils as DBElementTransformUtils\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\n\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\t\r\n\r\ndef insertLenFam():\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\tsetLength = 0\r\n\tNset1_ = MainSectionsSet[0][1] #начальный номер наборов\r\n\tcurSetCab = []\r\n\tlenSet = len(MainSectionsSet)\t\r\n\tfor i in xrange(0, lenSet + 1, 1):\r\n\t\tif i == lenSet:\r\n\t\t\tfor cab in curSetCab:\r\n\t\t\t\tcab.LookupParameter(\"Длина_набора_общая\").Set(setLength)\r\n\t\t\tbreak\r\n\t\t\t\r\n\t\tsec1 = doc.GetElement(MainSectionsSet[i][0])\r\n\t\tcurSetCab.append(sec1)\r\n\t\tNset1 = MainSectionsSet[i][1]\t\t\t\r\n\t\tlSec = sec1.LookupParameter(\"Длина_кабеля_расчетная\").AsDouble()\r\n\t\tif (Nset1_ == Nset1):\r\n\t\t\tsetLength = setLength + lSec\r\n\t\t\r\n\t\tif Nset1_ != Nset1:\r\n\t\t\tfor cab in curSetCab:\r\n\t\t\t\tcab.LookupParameter(\"Длина_набора_общая\").Set(setLength)\r\n\t\t\tdel curSetCab[:]\r\n\t\t\r\n\t\tp = sec1.LookupParameter(\"9_Длина_кабеля_от_начала\")\r\n\t\tp.Set(setLength)\r\n\t\t\r\n\t\tif (Nset1_ != Nset1):\r\n\t\t\tsetLength = lSec\t\r\n\t\tNset1_ = Nset1\r\n\r\n\t\t\r\n\r\n\t\r\n\tTransactionManager.Instance.TransactionTaskDone()\r\n\treturn 1\r\n\t\t\r\ndef Unсheck_tuneRequirement():\t\t\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\tfor secSet in MainSectionsSet:\r\n\t\tsec = doc.GetElement(secSet[0])\r\n\t\tsec.LookupParameter(\"Требуется_настройка\").Set(False)\t\t\t\r\n\tTransactionManager.Instance.TransactionTaskDone()\r\n\treturn 1\r\n \r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n\r\nMainSectionsSet = IN[0]\r\nuncheckTuneReq = IN[1]\r\n#MainSectionsSet [0] - кабель; [1] - номер кабеля; [2] - номер отрезка; [3] - высота до начала; [4] - высота до конца\r\nfeetToMm = 0.00328084\r\n\r\n\r\n\r\nif MainSectionsSet:\r\n\telementTypeString = MainSectionsSet.pop(1)\r\n\tprogrammNum = MainSectionsSet.pop(0)\r\n\tif (programmNum == \"programm 3\") and (elementTypeString == \"Типовой кабель_v4\"):\r\n\t\tinsertLenFam()\r\n\t\tif uncheckTuneReq:\r\n\t\t\tUnсheck_tuneRequirement()\r\n\t\t\tTaskDialog.Show(\"Оповещение!\", 'Соед. муфты настроены, чекбокс \"Требуется_настройка\" выключен!')\r\n\t\t\tOUT = \"Done. Checkbox off\"\r\n\t\telse:\r\n\t\t\tTaskDialog.Show(\"Оповещение!\", 'соед. муфты настроены, чекбокс \"Требуется_настройка\" не тронут!')\r\n\t\t\tOUT = \"Done. Checkbox untouch\"\t\r\nelse:\r\n\tOUT = []\r\n\r\n\r\n",
+      "VariableInputPorts": true,
+      "Id": "2a461a904c974e60b4c1f2655aa46d5b",
+      "Inputs": [
+        {
+          "Id": "8c5e5ba0264f4650930e8dc5c76f64c5",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "fe82fc3a9b814caba5568bd270c3e594",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "a4cb9d535e91413bbb8cd16ff9c7b438",
+          "Name": "OUT",
+          "Description": "Результат сценария Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение встроенного сценария IronPython."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Загрузить стандартную библиотеку Python и библиотеку DesignScript\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\nDynPoint = Point\r\nDynLine = Line\r\nDynSurface = Surface\r\nimport math\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nclr.AddReference(\"RevitAPIUI\")\r\nfrom Autodesk.Revit.UI import *\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.DB import ElementId as DBElementId\r\nfrom Autodesk.Revit.DB import ElementTransformUtils as DBElementTransformUtils\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\n\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nimport time\r\n\r\ndef Collinearity(A,B):\r\n\tk1xi = abs(A.Y*B.Z - A.Z*B.Y)\r\n\tk2xj = abs(A.X*B.Z - A.Z*B.X)\r\n\tk3xk = abs(A.X*B.Y - A.Y*B.X)\r\n\tif (k1xi < 0.1*feetToMm) and (k2xj < 0.1*feetToMm) and (k3xk < 0.1*feetToMm):\r\n\t\treturn True\r\n\telse:\r\n\t\treturn False\r\n\t\r\ndef AngleBetweenVectors(A,B):\r\n\tmodA = math.sqrt(A.X**2 + A.Y**2 + A.Z**2)\r\n\tmodB = math.sqrt(B.X**2 + B.Y**2 + B.Z**2)\r\n\tscalAxB = A.X*B.X + A.Y*B.Y + A.Z*B.Z\r\n\treturn (math.degrees(math.acos(scalAxB/(modA*modB))))\r\n\t\r\ndef Perpendicular_z0(X,Y):\r\n\tnapravlenie = 1 #1 если вправо, -1 если влево\r\n\tanyLen = 10 #любой X или Y для перпендикуляра\r\n\tif (((X >= 0) and (Y > 0)) or ((X < 0) and (Y > 0))): \r\n\t\tperp = XYZ(anyLen,-X/Y*anyLen,0)\r\n\telif (Y == 0) and (X > 0):\r\n\t\tperp = XYZ(0,-anyLen,0)\r\n\telif (Y == 0) and (X < 0):\r\n\t\tperp = XYZ(0,anyLen,0)\r\n\telse:\r\n\t\tperp = XYZ(-anyLen,X/Y*anyLen,0)\r\n\tperp = XYZ(perp.X*napravlenie, perp.Y*napravlenie, perp.Z*napravlenie)\r\n\treturn perp\r\n\t\r\ndef vectorMult(a,b):\r\n\tX = a.Y*b.Z - a.Z*b.Y\r\n\tY = a.Z*b.X - a.X*b.Z\r\n\tZ = a.X*b.Y - a.Y*b.X\r\n\tc = XYZ(X,Y,Z)\r\n\treturn c\r\n\t\r\ndef scalarMult(a,b):\r\n\tc = a.X*b.X + a.Y*b.Y + a.Z*b.Z\r\n\treturn c\r\n\t\r\ndef BendFamInst(sec1, sec2, sec1Ground1, sec1Ground2, sec2Ground2):\t\r\n\r\n\tXyz1 = sec1.Location.Curve.GetEndPoint(0)\r\n\tXyz1 = Xyz1 + XYZ(0,0,sec1Ground1)\r\n\tXyz2 = sec1.Location.Curve.GetEndPoint(1)\r\n\tXyz2 = Xyz2 + XYZ(0,0,sec1Ground2)\r\n\tXyz3 = sec2.Location.Curve.GetEndPoint(1)\r\n\tXyz3 = Xyz3 + XYZ(0,0,sec2Ground2)\r\n\t##первый отрезок кабеля это AB, второй отрезок кабеля это BC\r\n\t\r\n\tBA = XYZ(Xyz1.X - Xyz2.X, Xyz1.Y - Xyz2.Y, Xyz1.Z - Xyz2.Z)\r\n\tBAhorizont = XYZ(BA.X, BA.Y, 0)\t\r\n\tAB = XYZ(-BA.X,-BA.Y,-BA.Z)\r\n\tBC = XYZ(Xyz3.X - Xyz2.X, Xyz3.Y - Xyz2.Y, Xyz3.Z - Xyz2.Z)\r\n\tBChorizont = XYZ(BC.X, BC.Y, 0)\r\n\tCB = XYZ(-BC.X,-BC.Y,-BC.Z)\r\n\t######################\r\n\tdirectionAlfa = 0\r\n\tif Collinearity(BA,BC):\r\n\t\t#необходимо сбросить все параметры\r\n\t\talfa = 180\r\n\t\tbeta = 90\t\r\n\telse:\r\n\t\tif Collinearity(BAhorizont,BChorizont):\r\n\t\t\talfa = 180\t\t\t\t\r\n\t\telse:\r\n\t\t\talfa = AngleBetweenVectors(BAhorizont,BChorizont)\t\r\n\t\t\t#Найдем вправо ли направлено сл. траншея или влево\r\n\t\t\tvectorZ = XYZ(0,0,1)\r\n\t\t\tdirectionAlfa = scalarMult(vectorMult(BAhorizont, BChorizont), vectorZ) #Если больше нуля, тогда вправо, если меньше то влево\r\n\t\t\t\r\n\t\t\r\n\t\t#найдем перпендикулярный вектор для BC вправо(направление сгиба)\r\n\t\t#BCperp = Perpendicular_z0(BC.X, BC.Y)\t\r\n\r\n\t\t#BAshift =  XYZ(BA.X, BA.Y, BA.Z + 100)\r\n\t\t#коэффициенты плоскости заданной векторам BA и BAshift\r\n\t\t#a = BA.Y*BAshift.Z - BAshift.Y*BA.Z\r\n\t\t#b = -(BA.X*BAshift.Z - BAshift.X*BA.Z)\r\n\t\t#c = BA.X*BAshift.Y - BAshift.X*BA.Y\r\n\t\t#v = math.sqrt(a**2 + b**2 + c**2)\r\n\t\t#normal = XYZ(a/v,b/v,c/v)\r\n\t\t#Проекция вектора BC на плоскость qPr=q-dot(q-p,n)*n\r\n\t\t#BC_ = BC - scalarMult(BC,normal)*normal\r\n\t\tbeta1 = -(90 - AngleBetweenVectors(BA,XYZ(0,0,1)))*2\r\n\t\tbeta2 = -(90 - AngleBetweenVectors(BC,XYZ(0,0,1)))*2\r\n\t\t#TaskDialog.Show(\"qwe\", str(BC_.X)+\" \"+str(BC_.Y)+\" \"+str(BC_.Z))\r\n\t\t#TaskDialog.Show(\"qwe\", str(beta1))\r\n\t\t#TaskDialog.Show(\"qwe\", str(beta2))\r\n\t\t#Найдем куда поворачивать, в плюс или в минус\r\n\t\t#найдем перпендикулярный вектор для AB вправо\r\n\t\t#ABperp = Perpendicular_z0(AB.X, AB.Y)\r\n\t\t#directionBeta = scalarMult(vectorMult(BA, BC_), ABperp) #Если больше нуля, тогда по часовой, если меньше, тогда против\r\n\t\t#TaskDialog.Show(\"qwe\", str(directionBeta))\r\n\t\t#коэффициенты плоскости векторам AB и ABperp\r\n\t\t#a1 = AB.Y*ABperp.Z - ABperp.Y*AB.Z\r\n\t\t#b1 = -(AB.X*ABperp.Z - ABperp.X*AB.Z)\r\n\t\t#c1 = AB.X*ABperp.Y - ABperp.X*AB.Y\r\n\t\t#коэффициенты плоскости векторам BC и BCperp\r\n\t\t#a2 = BC.Y*BCperp.Z - BCperp.Y*BC.Z\r\n\t\t#b2 = -(BC.X*BCperp.Z - BCperp.X*BC.Z)\r\n\t\t#c2 = BC.X*BCperp.Y - BCperp.X*BC.Y\t\r\n\t\t#TaskDialog.Show(\"qwe\",str(BCperp.X) + \" \" + str(BCperp.Y))\t\r\n\t\t#cosBeta1 = (a*a1 + b*b1 + c*c1)/(math.sqrt(a**2 + b**2 + c**2)*math.sqrt(a1**2 + b1**2 + c1**2))\r\n\t\t#beta1 = math.degrees(math.acos(cosBeta1))\r\n\t\t#cosBeta2 = (a*a2 + b*b2 + c*c2)/(math.sqrt(a**2 + b**2 + c**2)*math.sqrt(a2**2 + b2**2 + c2**2))\r\n\t\t#beta2 = math.degrees(math.acos(cosBeta2))\r\n\t\t#Необходимо определить направление поворота одной плоскости на другую\r\n\t\t#direction1 = scalarMult(vectorMult(ABperp, BC), AB)\r\n\t\t#direction2 = scalarMult(vectorMult(BCperp, BA), BC)\r\n\t\tif directionAlfa < 0: \r\n\t\t\talfa = -alfa\t\r\n\t\t#if directionBeta < 0:\r\n\t\t#\tbeta = -beta\r\n\t###########end if\t\r\n\tp = sec1.LookupParameter(\"01_Конец_А_угол_горизонт\")\r\n\tp.Set(math.radians(alfa))\r\n\tp = sec2.LookupParameter(\"02_Начало_А_угол_горизонт\")\r\n\tp.Set(math.radians(alfa))\r\n\tp = sec1.LookupParameter(\"03_Конец_B_угол_верт\")\r\n\tp.Set(math.radians(beta1))\r\n\tp = sec2.LookupParameter(\"04_Начало_B_угол_верт\")\r\n\tp.Set(math.radians(beta2))\r\n\t#p = cab2.LookupParameter(\"5_Угол_начала\")\r\n\t#p.Set(math.radians(90 - alfa/2))03_Конец_B_угол_верт\r\n\t#p = cab1.LookupParameter(\"8_Поворот_конца\")\r\n\t#p.Set(math.radians(beta1))\r\n\t#p = cab2.LookupParameter(\"7_Поворот_начала\")\r\n\t#p.Set(math.radians(beta2))\t\r\n\t\r\ndef insertLenFam():\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\tsetLength = 0\r\n\tNset1 = 1#начальный номер наборов\r\n\tfor i in xrange(0, len(MainSectionsSet), 1):\t\t\r\n\t\tsec2 = doc.GetElement(MainSectionsSet[i][0])\r\n\t\tNset2 = MainSectionsSet[i][1]\t\t\t\r\n\t\tp = sec2.LookupParameter(\"Длина_кабеля_расчетная\").AsDouble()\t\r\n\t\tif Nset1 == Nset2:\r\n\t\t\tsetLength = setLength + p\r\n\t\telse:\r\n\t\t\tsetLength = p\r\n\t\tNset1 = Nset2\r\n\t\tp = sec2.LookupParameter(\"9_Длина_кабеля_от_начала\")\r\n\t\tp.Set(setLength)\r\n\tTransactionManager.Instance.TransactionTaskDone()\r\n\treturn 1\r\n\t\t\r\n\r\ndef TuneAllElements():\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\tfor i in xrange(0, len(MainSectionsSet)-1, 1):\r\n\t\t#TaskDialog.Show(\"qwe\",str(Cab_NCab_Nsec_All[i][1]) + \" \" + str(Cab_NCab_Nsec_All[i][2]))\t\r\n\t\tif i == len(MainSectionsSet):\t\r\n\t\t\tbreak\r\n\t\tsec1 = doc.GetElement(MainSectionsSet[i][0])\r\n\t\tNsec1 = MainSectionsSet[i][1]\t\t\t\t\r\n\t\tsec2 = doc.GetElement(MainSectionsSet[i+1][0])\r\n\t\tNsec2 = MainSectionsSet[i+1][1]\r\n\t\tif Nsec1 == Nsec2:\r\n\t\t\t#TaskDialog.Show(\"qwe\",str(Cab_NCab_Nsec_All[i][2]) + \" \" + str(Cab_NCab_Nsec_All[i+1][2]))\t\r\n\t\t\tsec1Ground1 =  MainSectionsSet[i][3]\r\n\t\t\tsec1Ground2 =  MainSectionsSet[i][4]\r\n\t\t\tsec2Ground2 = MainSectionsSet[i+1][4]\r\n\t\t\tBendFamInst(sec1, sec2, sec1Ground1, sec1Ground2, sec2Ground2)\r\n\t\tTransactionManager.Instance.TransactionTaskDone()\r\n\t\t\r\ndef Unсheck_tuneRequirement():\t\t\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\tfor secSet in MainSectionsSet:\r\n\t\tsec = doc.GetElement(secSet[0])\r\n\t\tsec.LookupParameter(\"Требуется_настройка\").Set(False)\t\t\t\r\n\tTransactionManager.Instance.TransactionTaskDone()\r\n\treturn 1\r\n \r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n\r\nMainSectionsSet = IN[0]\r\nuncheckTuneReq = IN[1]\r\n#Cab_NCab_Nsec [0] - кабель; [1] - номер кабеля; [2] - номер отрезка; [3] - высота до начала; [4] - высота до конца\r\nfeetToMm = 0.00328084\r\n\r\nif MainSectionsSet:\r\n\telementTypeString = MainSectionsSet.pop(1)\r\n\tprogrammNum = MainSectionsSet.pop(0)\r\n\tif (programmNum == \"programm 2\") and (elementTypeString == \"Труба под путями_v1\"):\r\n\t\tTuneAllElements()\t\r\n\t\tif uncheckTuneReq:\r\n\t\t\tUnсheck_tuneRequirement()\r\n\t\t\tTaskDialog.Show(\"Оповещение!\", 'Трубы подняты, чекбокс \"Требуется_настройка\" выключен!')\r\n\t\t\tOUT = \"Done. Checkbox off\"\r\n\t\telse:\r\n\t\t\tTaskDialog.Show(\"Оповещение!\", 'Трубы подняты, чекбокс \"Требуется_настройка\" не тронут!')\r\n\t\t\tOUT = \"Done. Checkbox untouch\"\t\r\n\telse:\r\n\t\tOUT = []\r\nelse:\r\n\tOUT = []\r\n\r\n",
+      "VariableInputPorts": true,
+      "Id": "adf9046b6a0a47c4a9018d072d67d284",
+      "Inputs": [
+        {
+          "Id": "91bae19b87b84a3aa4e4a68ab2f39e7a",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "e2cc9b80ba84457b9249aa6ef588f5e4",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f0cf13b277a641c6bb7843ddfbcee818",
+          "Name": "OUT",
+          "Description": "Результат сценария Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение встроенного сценария IronPython."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nimport sys\r\nimport System\r\nfrom System import Array\r\nfrom System.Collections.Generic import *\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\nDynPoint = Point\r\nDynLine = Line\r\nDynCurve = Curve\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nclr.AddReference(\"RevitAPIUI\")\r\n\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.UI import *\r\n\r\nfrom Autodesk.Revit.UI.Selection import *\r\n\r\ndef modifyFamSet(elementId, famDictionary):\t\r\n\tfamNameString = doc.GetElement(elementId).Symbol.FamilyName\r\n\t#Пробуем найти в нашем словаре сборку элементов\r\n\tsetExist = False\r\n\tfor famName in famDictionary.keys():\r\n\t\tif famName == famNameString:\r\n\t\t\tsetExist = True \r\n\t#Если не нашли, то делаем новую и возвращаем ее\r\n\tif not setExist:\r\n\t\tFilteredElements = FilteredElementCollector(doc)\r\n\t\tFilteredElements.OfClass(FamilyInstance)\r\n\t\tFilteredElements.WhereElementIsNotElementType()\r\n\t\tFilteredElements.ToElements()\t\r\n\t\tset = []\t\r\n\t\tfor element in FilteredElements:\t\r\n\t\t\tif element.Symbol.FamilyName == famNameString:\r\n\t\t\t\tset.append(element)\t\r\n\t\tfamDictionary[famNameString] = set\r\n\treturn famDictionary[famNameString]\r\n\t\t\t\t\t\r\ndef SelectSetsByElement():\r\n\telementIds = uidoc.Selection.GetElementIds()\r\n\tif not elementIds:\r\n\t\treturn []\r\n\tfamDictionary = {}\r\n\tcurrentSetIds = []\r\n\tfor elementId in elementIds:\r\n\t\telement = doc.GetElement(elementId)\r\n\t\tcurrentSetIds.append(elementId)\r\n\t\tSetByName = modifyFamSet(elementId, famDictionary)\r\n\t\tp1 = element.LookupParameter(\"N_Набора\").AsInteger()\r\n\t\tfor elementByName in SetByName:\t\r\n\t\t\tp2 = elementByName.LookupParameter(\"N_Набора\").AsInteger()\r\n\t\t\tif p1 == p2:\r\n\t\t\t\tcurrentSetIds.append(elementByName.Id)\r\n\treturn currentSetIds\t\t\t\t\t\t\t\r\n\r\n\r\n\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application \r\nuidoc = uiapp.ActiveUIDocument\r\n\r\nnProgramm = IN[0]\r\nfeetToMm = 0.00328084\r\n\r\n\r\n\r\nif (nProgramm == 4):\r\n\tset = SelectSetsByElement()\r\n\t#MainSectionsSet_Filter = GetElements(FamilyNameForGet)\r\n\t#MainSectionsSet_Filter.insert(0,FamilyNameForGet)\r\n\t#MainSectionsSet_Filter.insert(0,\"programm 4\")\t\r\n\tif set:\r\n\t\tids = List[ElementId](1)\r\n\t\tfor id in set:\t\r\n\t\t\tids.Add(id)\r\n\t\tuidoc.Selection.SetElementIds(ids)\r\n\t\tTaskDialog.Show(\"Оповещение!\", 'Сборка выделена!')\r\n\t\tOUT = set\r\n\telse:\r\n\t\tOUT = []\r\nelse:\r\n\tOUT = []\r\n\r\n\r\n",
+      "VariableInputPorts": true,
+      "Id": "54a81cf92f6246df8aad34fa9dec7762",
+      "Inputs": [
+        {
+          "Id": "214316d5b89948d5ad25acac03961016",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "4181591567034c1d81b872a5948f885f",
+          "Name": "OUT",
+          "Description": "Результат сценария Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение встроенного сценария IronPython."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"1. Вставить элементы по линии\";\n\"2. Поднять элементы на поверхность\";\n\"3. Настроить муфты в кабеле\";\n\"4. Выделить сборку по отрезку\";",
+      "Id": "8650dde348444c22b55664ee53b25ec1",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "1acfbf430dd54f88908052c19795b5aa",
+          "Name": "",
+          "Description": "Значение выражения в строке 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "8006681761a5464baee7780bbf194424",
+          "Name": "",
+          "Description": "Значение выражения в строке 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "c4d7bee577464f03bec4251b395e14eb",
+          "Name": "",
+          "Description": "Значение выражения в строке 3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "3c567e1b9f574351ad9d1e94fa2ee264",
+          "Name": "",
+          "Description": "Значение выражения в строке 4",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Обеспечивает возможность непосредственного авторства кода DesignScript"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "str = IN[1]\r\nnum = 0\r\nif str == \"1. Вставить элементы по линии\":\r\n\tnum = 1\r\nelif str == \"2. Поднять элементы на поверхность\":\r\n\tnum = 2\r\nelif str == \"3. Настроить муфты в кабеле\":\r\n\tnum = 3\r\nelif str == \"4. Выделить сборку по отрезку\":\r\n\tnum = 4\r\n\r\nOUT = num\r\n\r\n\r\n",
+      "VariableInputPorts": true,
+      "Id": "af8afab7d03548599cd51679869c04fc",
+      "Inputs": [
+        {
+          "Id": "cdbb90e82eff4d4e93b88d6647d2ca74",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "c83c57d6143f4e479177c3861362e31a",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "8f25881f8c9246a39a91934fd8319304",
+          "Name": "OUT",
+          "Description": "Результат сценария Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение встроенного сценария IronPython."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "8f3c0484d0c84524a97be17b13ccf141",
+      "End": "05ec3bc72a554f5d835cfe5b52b317a2",
+      "Id": "a20ba3233c9a4b6fab0b89bdb6d4702b"
+    },
+    {
+      "Start": "8f3c0484d0c84524a97be17b13ccf141",
+      "End": "b80e1cdd1c174c7e9b1a5710f2ddc73a",
+      "Id": "eb29dd6f283d45a5bef37cc0d048d948"
+    },
+    {
+      "Start": "dee9de6d70ba4645be2eb1bca5e578fe",
+      "End": "f114ca9128d640d89ab2e94abd99489a",
+      "Id": "435d08602a054bf89a3adfa16c582dbf"
+    },
+    {
+      "Start": "6f91e27aa40749eab05fe829e69cd54f",
+      "End": "8c5e5ba0264f4650930e8dc5c76f64c5",
+      "Id": "db9b5c9047884a33ae7d5230a38763e1"
+    },
+    {
+      "Start": "6f91e27aa40749eab05fe829e69cd54f",
+      "End": "cf5dbd763d4e4e67a43572dfae80d575",
+      "Id": "33502e75611045dcbe2546dd16457a69"
+    },
+    {
+      "Start": "3b6cbcb0c0f34031be8e3d578613a3e3",
+      "End": "b70b547f107e45f886d5d153f079ef4c",
+      "Id": "d1960b4e9dc4482f9c543093d31281cd"
+    },
+    {
+      "Start": "c65a424d5b1b4176a81e44afa760f6e4",
+      "End": "83cd3bff04bc4deaafa9255c34b31188",
+      "Id": "3643f3f528714081a3b95dc7ecf008a2"
+    },
+    {
+      "Start": "c65a424d5b1b4176a81e44afa760f6e4",
+      "End": "884bf1ff31f64ad2aa370b2002be94df",
+      "Id": "abc8b081464841469baeb10be7d2a63c"
+    },
+    {
+      "Start": "c65a424d5b1b4176a81e44afa760f6e4",
+      "End": "91bae19b87b84a3aa4e4a68ab2f39e7a",
+      "Id": "9380ab95107f496292958d7c2174f534"
+    },
+    {
+      "Start": "ec49b92861984fdfb00cda863f14a833",
+      "End": "a4581f7be53c4ad19fbd778ffee7397d",
+      "Id": "cc3e8892e0054b2bbc2467161171b9cb"
+    },
+    {
+      "Start": "d4ab40d68e2b4f4ba6a460969790c137",
+      "End": "cdbb90e82eff4d4e93b88d6647d2ca74",
+      "Id": "4076cca133a844ab86fd1a935f0227e3"
+    },
+    {
+      "Start": "0ebe52edde344ea781811e1853936ea2",
+      "End": "ce253f41c3864f80b9fed261af714382",
+      "Id": "f9b1e01be5324c8e92a8b95d0d88c93e"
+    },
+    {
+      "Start": "0ebe52edde344ea781811e1853936ea2",
+      "End": "962e462e965242bb8608b38a81305f4e",
+      "Id": "7438e556523546418f4f64e1005614ae"
+    },
+    {
+      "Start": "812a7b77e7364f3a92cda6df8d39a866",
+      "End": "a3857271725a42599e30777dcfacb23b",
+      "Id": "7656fc98dace4d539af931f9950a28b8"
+    },
+    {
+      "Start": "812a7b77e7364f3a92cda6df8d39a866",
+      "End": "fe82fc3a9b814caba5568bd270c3e594",
+      "Id": "bcaa37ca3e4246e6a47c024e675fa9a2"
+    },
+    {
+      "Start": "812a7b77e7364f3a92cda6df8d39a866",
+      "End": "e2cc9b80ba84457b9249aa6ef588f5e4",
+      "Id": "34570e5e41e4407caecc6f5487ab3efb"
+    },
+    {
+      "Start": "7e8c8bfec8664b499f393f23504c73ab",
+      "End": "90b2ea0435464cc5b6bd5c2add6a0009",
+      "Id": "ae628062ab5e410aad17a83af29fe309"
+    },
+    {
+      "Start": "c4d7bee577464f03bec4251b395e14eb",
+      "End": "c83c57d6143f4e479177c3861362e31a",
+      "Id": "f2f344472055410599f5042bb269c067"
+    },
+    {
+      "Start": "8f25881f8c9246a39a91934fd8319304",
+      "End": "ea0b06d611604ee391d7c2535250211f",
+      "Id": "aec097c17f45471c958f8cfd13afa33c"
+    },
+    {
+      "Start": "8f25881f8c9246a39a91934fd8319304",
+      "End": "b378176341a94531860cc10a16fe1d9a",
+      "Id": "37dca43ec4d64519aa072d47b53fb466"
+    },
+    {
+      "Start": "8f25881f8c9246a39a91934fd8319304",
+      "End": "214316d5b89948d5ad25acac03961016",
+      "Id": "00f36accca4d42a1ab340ebb65d30289"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 100.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.5.0.7460",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Фоновый просмотр",
+      "EyeX": -12.334985128579007,
+      "EyeY": 15.58571708635483,
+      "EyeZ": 28.211911054132266,
+      "LookX": 9.4440171815399214,
+      "LookY": -13.835381062517843,
+      "LookZ": -36.025683692080904,
+      "UpX": 0.035291302084944083,
+      "UpY": 0.9902680687415728,
+      "UpZ": -0.13462420297996083
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": false,
+        "Name": "1.1 Схватить линии модели",
+        "Id": "2b3bb31156924165a9f2367e0105e113",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 480.10240114848159,
+        "Y": -128.70694997441677
+      },
+      {
+        "ShowGeometry": false,
+        "Name": "1.2 Вставить отрезки",
+        "Id": "c2b0d4c926ec4997ad8ce3973d7be1a0",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 837.63034588937592,
+        "Y": -132.64734035672143
+      },
+      {
+        "ShowGeometry": false,
+        "Name": "2.1 Схватить отрезки",
+        "Id": "302ae630a5644ac5953b01f20f4bc5b5",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 262.14036719455135,
+        "Y": 284.44168740176843
+      },
+      {
+        "ShowGeometry": false,
+        "Name": "Выбор_элемента",
+        "Id": "6aeb8f17aee548338d56dfcdb7723a94",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -230.91586957671149,
+        "Y": 281.90914661244165
+      },
+      {
+        "ShowGeometry": false,
+        "Name": "2.2 Поднять отрезки",
+        "Id": "e338751fc9f5474fa483ddc1cc02ff8b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 609.32263398608018,
+        "Y": 220.39979651922016
+      },
+      {
+        "ShowGeometry": false,
+        "Name": "H укладки",
+        "Id": "a8054195454a482abe1ca49d66389102",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 483.49314460493736,
+        "Y": 253.48372015730098
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Сброс",
+        "Id": "28f5589a53134edb9b1574dd9103fa1b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -229.82096463316077,
+        "Y": 209.86073240244309
+      },
+      {
+        "ShowGeometry": false,
+        "Name": "2.3.1 Настройка КАБЕЛЯ",
+        "Id": "d44d6b7bb10e417a8bd526bb67c1fa40",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 839.1523505829208,
+        "Y": 233.10607098359287
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "тройник",
+        "Id": "f40f2679379b4a6e880ad1c389a9e72d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 86.8602938583906,
+        "Y": 303.44290509142581
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Результат",
+        "Id": "a15d90d14d7d422283136f7cdea5e8a9",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1012.3175753354807,
+        "Y": -132.75757448038269
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Убрать \"Треб_настр\"",
+        "Id": "e10f77a781d74e5aa1c11290263d96b4",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 537.19561145716818,
+        "Y": 379.43416423901817
+      },
+      {
+        "ShowGeometry": false,
+        "Name": "2.3.2 Настройка ТРАНШЕИ",
+        "Id": "9e438bc92b284cc4a34684f2703e4611",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 857.66451659005759,
+        "Y": 425.19296409684171
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Watch",
+        "Id": "f62ae0319b6e4f1296a507178f2b43b1",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 703.10769006875739,
+        "Y": -295.4520868703413
+      },
+      {
+        "ShowGeometry": false,
+        "Name": "Доп. H",
+        "Id": "734afc4f1eb942f9aba59b71e34d45f2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 720.7904768411704,
+        "Y": -77.5678685900067
+      },
+      {
+        "ShowGeometry": false,
+        "Name": "3 Настр. МУФТ",
+        "Id": "2a461a904c974e60b4c1f2655aa46d5b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1098.160698639686,
+        "Y": 159.60058372182823
+      },
+      {
+        "ShowGeometry": false,
+        "Name": "2.3.3 Настройка ТРУБ",
+        "Id": "adf9046b6a0a47c4a9018d072d67d284",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 868.46451396609757,
+        "Y": 589.77703910825073
+      },
+      {
+        "ShowGeometry": false,
+        "Name": "4 Выделить сборку",
+        "Id": "54a81cf92f6246df8aad34fa9dec7762",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 261.53044854436212,
+        "Y": 456.3103856340075
+      },
+      {
+        "ShowGeometry": false,
+        "Name": "Выбор_программы",
+        "Id": "8650dde348444c22b55664ee53b25ec1",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -296.393689954455,
+        "Y": 427.50735649937383
+      },
+      {
+        "ShowGeometry": false,
+        "Name": "N_Programms",
+        "Id": "af8afab7d03548599cd51679869c04fc",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 84.36196433234511,
+        "Y": 425.20507298510489
+      }
+    ],
+    "Annotations": [
+      {
+        "Id": "8a4e8451eed34101856dcf51dd72108a",
+        "Title": "1. Создание элемента",
+        "Nodes": [
+          "2b3bb31156924165a9f2367e0105e113",
+          "c2b0d4c926ec4997ad8ce3973d7be1a0",
+          "a15d90d14d7d422283136f7cdea5e8a9",
+          "734afc4f1eb942f9aba59b71e34d45f2"
+        ],
+        "Left": 470.10240114848159,
+        "Top": -185.75757448038269,
+        "Width": 630.21517418699909,
+        "Height": 201.189705890376,
+        "FontSize": 36.0,
+        "InitialTop": -132.75757448038269,
+        "InitialHeight": 200.189705890376,
+        "TextblockHeight": 43.0,
+        "Background": "#FFC1D676"
+      },
+      {
+        "Id": "030bbc7c6ba14af6912adab14f6fd535",
+        "Title": "Найстройки для создания элементов на поверхности",
+        "Nodes": [
+          "6aeb8f17aee548338d56dfcdb7723a94",
+          "28f5589a53134edb9b1574dd9103fa1b",
+          "8650dde348444c22b55664ee53b25ec1"
+        ],
+        "Left": -306.393689954455,
+        "Top": 69.860732402443091,
+        "Width": 346.54509505644933,
+        "Height": 496.64662409693074,
+        "FontSize": 36.0,
+        "InitialTop": 209.86073240244309,
+        "InitialHeight": 386.64662409693074,
+        "TextblockHeight": 130.0,
+        "Background": "#FFC1D676"
+      }
+    ],
+    "X": 381.64369657015465,
+    "Y": 300.163133344457,
+    "Zoom": 0.80485607390322433
+  }
+}
